@@ -62,6 +62,7 @@ In a file (also works for JavaScript)
 ```
 
 ## CHANGELOG
+* **[1.2.0]** Throw if preserveUnknownTokens is "error" and an unknown token is encountered.
 * **[1.1.5]** Node LTS change.
 * **[1.1.4]** Packages audit fixes and Event-stream downgrade due to the security flag (downgraded to non-malicious version, 3.3.4 from 3.3.6).
 * **[1.1.3]** Legacy plugin updates (Thanks coreyfarrell).
@@ -81,7 +82,7 @@ gulp-token-replace can be called with a config object with these attributes:
  sub-objects with hierarchical tokens.
 * **preserveUnknownTokens** (defaults to false) - By default unknown tokens will be removed from the source file and
  replaced with an empty string.  By setting the preserveUnknownTokens option to true, the source file will not be
- changed when an unknown token is encountered.
+ changed when an unknown token is encountered. By setting the preserveUnknownTokens option to "error", an error will be thrown when an unknown token is encountered.
 * **delimiter** (defaults to '.') - By default dot-notation is used to search for values in sub-objects. By setting
  the delimiter option to any other value, tokens like `{{main.css}}` or `{{styles/main.css}}` can be used.
 
