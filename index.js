@@ -56,8 +56,13 @@ function replace(text, options) {
       tokenName = tokenName.toString().split('[')[0];
     }
     var tokenValue = getTokenValue(options.tokens, tokenName, options.delimiter);
-    if (tokenValue === null && !options.preserveUnknownTokens) {
-      tokenValue = '';
+    if (tokenValue === null) {
+      if (options.preserveUnknownTokens === "error") {
+        throw new Error(`Undefined token: ${options.prefix}${tokenName}${options.suffix}`);
+      }
+      if (!options.preserveUnknownTokens) {
+        tokenValue = '';
+      }
     }
     if (tokenValue !== null) {
       if (typeof tokenValue == 'object') {

@@ -14,6 +14,11 @@ describe('source1.html', function() {
       TestReplace('source1.html', null, 'source1_output1.html', true, cb);
     });
   });
+  describe('with replace({preserveUnknownTokens: "error"})', function() {
+    it('should return an error', function(cb) {
+      TestReplaceError('source1.html', {preserveUnknownTokens: 'error'}, "Undefined token: {{baseUrl}}", cb);
+    });
+  });
   describe('with replace({preserveUnknownTokens: true})', function() {
     it('should match source1.html', function(cb) {
       TestReplace('source1.html', {preserveUnknownTokens: true}, 'source1.html', true, cb);
@@ -67,6 +72,11 @@ describe('source2.css', function() {
 describe('source3.txt', function() {
   var source3_tokens = require('./fixtures/source3_tokens.js');
 
+  describe('with replace({preserveUnknownTokens: "error"})', function() {
+    it('should return an error', function(cb) {
+      TestReplaceError('source3.txt', {preserveUnknownTokens: 'error'}, "Undefined token: {{root.name}}", cb);
+    });
+  });
   describe('with replace({preserveUnknownTokens: true})', function() {
     it('should match source3.txt', function(cb) {
       TestReplace('source3.txt', {preserveUnknownTokens: true}, 'source3.txt', true, cb);
@@ -172,4 +182,17 @@ function TestReplace(sourceFile, options, testFile, shouldEqual, cb) {
         }
       }));
   });
+}
+
+function TestReplaceError(sourceFile, options, expectedErrorMessage, cb) {
+  gulp.src("test/fixtures/" + sourceFile)
+    .pipe(replace(options))
+    .on('error', function (err) {
+      err.message.should.equal(expectedErrorMessage);
+      this.emit('end');
+      cb();
+    })
+    .pipe(es.through(function() {
+      cb(new Error("Did not return error"));
+    }));
 }
