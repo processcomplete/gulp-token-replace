@@ -7,22 +7,16 @@ var PluginError = require('plugin-error');
 module.exports = function(options) {
   options = injectDefaultOptions(options);
 
-console.log(options);
-
   return through.obj(function(file, encoding, callback) {
     try {
-console.log("THROUGH");
       if (file.isNull()) {
-console.log('null')
         return callback(null, file);
       } else if (file.isStream()) {
-console.log('stream')
         file.contents.pipe(concat(function(data) {
           file.contents = Buffer.from(replace(String(data), options));
           return callback(null, file);
         }));
       } else if (file.isBuffer()) {
-console.log('buffer')
         file.contents = Buffer.from(replace(String(file.contents), options));
         return callback(null, file);
       } else {
