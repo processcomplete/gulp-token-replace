@@ -1,30 +1,35 @@
 'use strict';
 
 var concat = require('concat-stream');
-var es = require('event-stream');
+var through = require('through2');
 var PluginError = require('plugin-error');
 
 module.exports = function(options) {
   options = injectDefaultOptions(options);
 
-  return es.through(function(file) {
-    var self = this;
+console.log(options);
+
+  return through.obj(function(file, encoding, callback) {
     try {
+console.log("THROUGH");
       if (file.isNull()) {
-        self.emit('data', file);
+console.log('null')
+        return callback(null, file);
       } else if (file.isStream()) {
+console.log('stream')
         file.contents.pipe(concat(function(data) {
-          file.contents = new Buffer(replace(String(data), options));
-          self.emit('data', file);
+          file.contents = Buffer.from(replace(String(data), options));
+          return callback(null, file);
         }));
       } else if (file.isBuffer()) {
-        file.contents = new Buffer(replace(String(file.contents), options));
-        self.emit('data', file);
+console.log('buffer')
+        file.contents = Buffer.from(replace(String(file.contents), options));
+        return callback(null, file);
       } else {
-        self.emit('error', new PluginError('gulp-token-replace', new Error('unknown type of file')));
+        return callback(new PluginError('gulp-token-replace', new Error('unknown type of file')));
       }
     } catch (e) {
-      self.emit('error', new PluginError('gulp-token-replace', e));
+      return callback(new PluginError('gulp-token-replace', e));
     }
   });
 };

@@ -1,7 +1,7 @@
 var should = require('should');
 
 var fs = require("fs");
-var es = require('event-stream');
+var through = require('through2');
 var gulp = require("gulp");
 var replace = require('../');
 var concat = require('concat-stream');
@@ -170,7 +170,7 @@ function TestReplace(sourceFile, options, testFile, shouldEqual, cb) {
 
     gulp.src("test/fixtures/" + sourceFile)
       .pipe(replace(options))
-      .pipe(es.through(function(file) {
+      .pipe(through.obj(function(file) {
         if (file.isStream()) {
           file.contents.pipe(concat(function(output) {
             _assertOutput(String(output), String(expectedOutput));
@@ -192,7 +192,7 @@ function TestReplaceError(sourceFile, options, expectedErrorMessage, cb) {
       this.emit('end');
       cb();
     })
-    .pipe(es.through(function() {
+    .pipe(through.obj(function() {
       cb(new Error("Did not return error"));
     }));
 }
